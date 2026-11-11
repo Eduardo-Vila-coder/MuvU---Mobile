@@ -1,3 +1,4 @@
+#renombrado por el momento segun se menciona choca con otro archivo
 import { Text, View } from 'react-native';
 import { Button } from '../../components/ui/Button';
 import { sharedStyles } from '../../constants/theme';

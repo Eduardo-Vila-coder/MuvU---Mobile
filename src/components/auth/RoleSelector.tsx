@@ -2,7 +2,6 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../../constants/theme';
 import type { RegisterRole } from '../../types/auth';
-
 interface RoleOption {
   role: RegisterRole;
   title: string;
