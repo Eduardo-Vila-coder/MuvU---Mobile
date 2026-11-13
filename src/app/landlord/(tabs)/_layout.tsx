@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
-import { colors } from '../../../constants/theme';
+import { colors } from '@/constants/theme';
 
 // Bottom tabs of the landlord area (Expo Router's Tabs = Bottom Tabs Navigator)
 export default function LandlordTabsLayout() {
@@ -18,10 +18,38 @@ export default function LandlordTabsLayout() {
         name="index"
         options={{
           title: 'Mis habitaciones',
-          tabBarIcon: ({ color, size }) => <Ionicons name="home-outline" size={size} color={String(color ?? colors.primary)} />,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="home-outline" size={size} color={String(color ?? colors.primary)} />
+          ),
         }}
       />
-      {/* se agrego un mini parche para color */}
+      <Tabs.Screen
+        name="requests"
+        options={{
+          title: 'Solicitudes',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="mail-unread-outline" size={size} color={String(color ?? colors.primary)} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="payments"
+        options={{
+          title: 'Pagos',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="receipt-outline" size={size} color={String(color ?? colors.primary)} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Mi perfil',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person-circle-outline" size={size} color={String(color ?? colors.primary)} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }
