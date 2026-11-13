@@ -1,21 +1,21 @@
 import { useCallback, useRef } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
-import { ActionLink } from '../../../components/ui/ActionLink';
+import { ActionLink } from '@/components/ui/ActionLink';
 import { router, useFocusEffect } from 'expo-router';
-import { getErrorMessage, getErrorStatus } from '../../../api/errors';
-import { getLandlord, getLandlordRooms } from '../../../api/landlords';
-import { deleteRoom } from '../../../api/rooms';
-import { RoomCard } from '../../../components/rooms/RoomCard';
-import { Button } from '../../../components/ui/Button';
-import { EmptyState } from '../../../components/ui/EmptyState';
-import { FormAlert } from '../../../components/ui/FormAlert';
-import { PagedList } from '../../../components/ui/PagedList';
-import { colors } from '../../../constants/theme';
-import { useFetch } from '../../../hooks/useFetch';
-import { useLandlordId } from '../../../hooks/useLandlordId';
-import { usePagedList } from '../../../hooks/usePagedList';
-import { useToast } from '../../../hooks/useToast';
-import type { Room } from '../../../types/room';
+import { getErrorMessage, getErrorStatus } from '@/api/errors';
+import { getLandlord, getLandlordRooms } from '@/api/landlords';
+import { deleteRoom } from '@/api/rooms';
+import { RoomCard } from '@/components/rooms/RoomCard';
+import { Button } from '@/components/ui/Button';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { FormAlert } from '@/components/ui/FormAlert';
+import { PagedList } from '@/components/ui/PagedList';
+import { colors } from '@/constants/theme';
+import { useFetch } from '@/hooks/useFetch';
+import { useLandlordId } from '@/hooks/useLandlordId';
+import { usePagedList } from '@/hooks/usePagedList';
+import { useToast } from '@/hooks/useToast';
+import type { Room } from '@/types/room';
 
 // EP 014 (verified?) + landlord's rooms + EP 020 (delete)
 export default function MyRoomsScreen() {
@@ -115,6 +115,11 @@ export default function MyRoomsScreen() {
                 label="Imágenes"
                 onPress={() => router.push(`/landlord/rooms/${room.id}/images`)}
               />
+              <ActionLink
+                icon="sparkles-outline"
+                label="Destacar"
+                onPress={() => router.push(`/landlord/rooms/${room.id}/advertise`)}
+              />
               <ActionLink icon="trash-outline" label="Eliminar" danger onPress={() => confirmDelete(room)} />
 
             </View>
@@ -129,6 +134,7 @@ const styles = StyleSheet.create({
   header: { gap: 12 },
   actions: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 20,
     borderTopWidth: 1,
     borderTopColor: colors.border,

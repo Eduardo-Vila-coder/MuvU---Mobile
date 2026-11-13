@@ -1,8 +1,8 @@
 import { createContext, useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { refreshAccessToken, setSessionExpiredHandler } from '../api/client';
-import { getErrorStatus } from '../api/errors';
-import { tokenStorage } from '../api/tokenStorage';
-import type { AuthResponse, AuthUser } from '../types/auth';
+import { refreshAccessToken, setSessionExpiredHandler } from '@/api/client';
+import { getErrorStatus } from '@/api/errors';
+import { tokenStorage } from '@/api/tokenStorage';
+import type { AuthResponse, AuthUser } from '@/types/auth';
 
 interface AuthContextValue {
   user: AuthUser | null;
@@ -38,14 +38,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let active = true;
 
-    refreshAccessToken()
-      .then((response) => {
-        if (response.rol === 'ADMIN') return tokenStorage.clear(); // admin only uses the web
-        if (active) setUser({ id: response.id, role: response.rol });
+    tokenStorage.getRefreshToken()
+      .then((refreshToken) => (refreshToken ? refreshAccessToken() : null))
+      .then(async (response) => {
+        if (!response) return;
+        if (response.rol === 'ADMIN') {
+          await tokenStorage.clear(); // admin accounts are only used from the web
+        } else if (active) {
+          setUser({ id: response.id, role: response.rol });
+        }
       })
-      .catch((err) => {
+      .catch(async (err) => {
         // Server rejected the token -> delete it. No internet -> keep it for next time
-        if (getErrorStatus(err) !== null) tokenStorage.clear();
+        if (getErrorStatus(err) !== null) await tokenStorage.clear();
       })
       .finally(() => {
         if (active) setIsRestoring(false);
