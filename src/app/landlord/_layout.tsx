@@ -12,6 +12,7 @@ export default function LandlordLayout() {
         <Stack.Screen name="rooms/[id]/edit" options={{ title: 'Editar habitación' }} />
         <Stack.Screen name="rooms/[id]/images" options={{ title: 'Imágenes' }} />
         <Stack.Screen name="rooms/[id]/advertise" options={{ title: 'Destacar habitación' }} />
+        <Stack.Screen name="students/[id]" options={{ title: 'Perfil del estudiante' }} />
       </Stack>
     </RequireRole>
   );
