@@ -116,8 +116,9 @@ export default function MyRoomsScreen() {
                 onPress={() => router.push(`/landlord/rooms/${room.id}/images`)}
               />
               <ActionLink
-                icon="sparkles-outline"
-                label="Destacar"
+                icon={room.esDestacada ? 'star' : 'sparkles-outline'}
+                label={room.esDestacada ? 'Ya destacada' : 'Destacar'}
+                disabled={room.esDestacada}
                 onPress={() => router.push(`/landlord/rooms/${room.id}/advertise`)}
               />
               <ActionLink icon="trash-outline" label="Eliminar" danger onPress={() => confirmDelete(room)} />
