@@ -85,7 +85,9 @@ function RoomDetailScreen() {
         {user?.role === 'ARRENDADOR' && (
           <Text style={[sharedStyles.muted, styles.note]}>Solo los estudiantes pueden reservar habitaciones.</Text>
         )}
-        {/* Lote B: "Reservar" button for students */}
+        {user?.role === 'ESTUDIANTE' && (
+          <Button title="Reservar" onPress={() => router.push(`/student/reserve/${room.id}`)} />
+        )}
       </View>
 
       <RoomRouteMap latitude={room.latitud} longitude={room.longitud} />

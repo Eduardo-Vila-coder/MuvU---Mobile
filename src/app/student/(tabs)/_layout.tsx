@@ -1,13 +1,9 @@
-import { TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import { colors } from '@/constants/theme';
-import { useAuth } from '@/hooks/useAuth';
 
-// Bottom tabs of the student area. Lote B adds "Mis reservas" and Lote C "Mi perfil"
+// Bottom tabs of the student area (Expo Router's Tabs = Bottom Tabs Navigator)
 export default function StudentTabsLayout() {
-  const { signOut } = useAuth();
-
   return (
     <Tabs
       screenOptions={{
@@ -16,12 +12,6 @@ export default function StudentTabsLayout() {
         headerTintColor: colors.primary,
         headerStyle: { backgroundColor: colors.surface },
         headerTitleStyle: { fontWeight: '700', color: colors.text },
-        // TEMP: sign out until the profile tab exists (Lote C)
-        headerRight: () => (
-          <TouchableOpacity onPress={() => void signOut()} style={{ marginRight: 16 }} accessibilityLabel="Cerrar sesión">
-            <Ionicons name="log-out-outline" size={22} color={colors.primary} />
-          </TouchableOpacity>
-        ),
       }}
     >
       <Tabs.Screen
@@ -39,6 +29,24 @@ export default function StudentTabsLayout() {
           title: 'Cercanas',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="navigate-outline" size={size} color={String(color ?? colors.primary)} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="reservations"
+        options={{
+          title: 'Mis reservas',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="calendar-outline" size={size} color={String(color ?? colors.primary)} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Mi perfil',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person-circle-outline" size={size} color={String(color ?? colors.primary)} />
           ),
         }}
       />
