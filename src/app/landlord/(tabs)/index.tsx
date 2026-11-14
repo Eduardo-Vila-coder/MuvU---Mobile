@@ -1,9 +1,10 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 import { ActionLink } from '@/components/ui/ActionLink';
 import { router, useFocusEffect } from 'expo-router';
 import { getErrorMessage, getErrorStatus } from '@/api/errors';
 import { getLandlord, getLandlordRooms } from '@/api/landlords';
+import { getMyAdPayments } from '@/api/payments';
 import { deleteRoom } from '@/api/rooms';
 import { RoomCard } from '@/components/rooms/RoomCard';
 import { Button } from '@/components/ui/Button';
@@ -15,6 +16,7 @@ import { useFetch } from '@/hooks/useFetch';
 import { useLandlordId } from '@/hooks/useLandlordId';
 import { usePagedList } from '@/hooks/usePagedList';
 import { useToast } from '@/hooks/useToast';
+import { todayIso } from '@/utils/dates';
 import type { Room } from '@/types/room';
 
 // EP 014 (verified?) + landlord's rooms + EP 020 (delete)
@@ -28,6 +30,27 @@ export default function MyRoomsScreen() {
     (signal) => getLandlord(landlordId, signal),
     [landlordId],
   );
+  const {
+    data: payments,
+    loading: paymentsLoading,
+    error: paymentsError,
+    reload: reloadPayments,
+  } = useFetch((signal) => getMyAdPayments(signal), [landlordId]);
+  const today = todayIso();
+  const paidRoomIds = useMemo(
+    () => new Set(
+      payments
+        ?.filter((payment) => payment.fechaInicio <= today && today <= payment.fechaFin)
+        .map((payment) => payment.habitacionId),
+    ),
+    [payments, today],
+  );
+  const checkingPayments = paymentsLoading || !payments || !!paymentsError;
+
+  const reloadRoomsAndPayments = useCallback(() => {
+    reloadList();
+    reloadPayments();
+  }, [reloadList, reloadPayments]);
 
   // Tabs stay mounted, so reload when the user comes back from a form.
   // The first focus is skipped: the hooks above already fetched.
@@ -38,9 +61,9 @@ export default function MyRoomsScreen() {
         isFirstFocus.current = false;
         return;
       }
-      reloadList();
+      reloadRoomsAndPayments();
       reloadLandlord();
-    }, [reloadList, reloadLandlord]),
+    }, [reloadRoomsAndPayments, reloadLandlord]),
   );
 
   function confirmDelete(room: Room) {
@@ -72,6 +95,12 @@ export default function MyRoomsScreen() {
 
   const header = (
     <View style={styles.header}>
+      {paymentsError && (
+        <>
+          <FormAlert message="No pudimos verificar los pagos. Reintenta para habilitar la opción de destacar." />
+          <Button title="Reintentar verificación de pagos" onPress={reloadPayments} variant="secondary" />
+        </>
+      )}
       {isUnverified && (
         <FormAlert
           variant="info"
@@ -88,7 +117,7 @@ export default function MyRoomsScreen() {
 
   return (
     <PagedList
-      list={list}
+      list={{ ...list, reload: reloadRoomsAndPayments }}
       keyExtractor={(room) => String(room.id)}
       itemLabel="habitaciones"
       header={header}
@@ -99,35 +128,42 @@ export default function MyRoomsScreen() {
           description="Usa el botón Publicar habitación para agregar la primera."
         />
       }
-      renderItem={(room) => (
-        <RoomCard
-          room={room}
-          onPress={() => router.push(`/rooms/${room.id}`)}
-          actions={
-            <View style={styles.actions}>
+      renderItem={(room) => {
+        const isFeatured = room.esDestacada || paidRoomIds.has(room.id);
+        return (
+          <RoomCard
+            room={room}
+            onPress={() => router.push(`/rooms/${room.id}`)}
+            actions={
+              <View style={styles.actions}>
 
-              <ActionLink
-                icon="create-outline"
-                label="Editar"
-                onPress={() => router.push(`/landlord/rooms/${room.id}/edit`)}
-              />
-              <ActionLink
-                icon="images-outline"
-                label="Imágenes"
-                onPress={() => router.push(`/landlord/rooms/${room.id}/images`)}
-              />
-              <ActionLink
-                icon={room.esDestacada ? 'star' : 'sparkles-outline'}
-                label={room.esDestacada ? 'Ya destacada' : 'Destacar'}
-                disabled={room.esDestacada}
-                onPress={() => router.push(`/landlord/rooms/${room.id}/advertise`)}
-              />
-              <ActionLink icon="trash-outline" label="Eliminar" danger onPress={() => confirmDelete(room)} />
+                <ActionLink
+                  icon="create-outline"
+                  label="Editar"
+                  onPress={() => router.push(`/landlord/rooms/${room.id}/edit`)}
+                />
+                <ActionLink
+                  icon="images-outline"
+                  label="Imágenes"
+                  onPress={() => router.push(`/landlord/rooms/${room.id}/images`)}
+                />
+                <ActionLink
+                  icon={isFeatured ? 'star' : 'sparkles-outline'}
+                  label={isFeatured ? 'Ya destacada' : 'Destacar'}
+                  disabled={isFeatured || checkingPayments}
+                  onPress={() => {
+                    if (!isFeatured && !checkingPayments) {
+                      router.push(`/landlord/rooms/${room.id}/advertise`);
+                    }
+                  }}
+                />
+                <ActionLink icon="trash-outline" label="Eliminar" danger onPress={() => confirmDelete(room)} />
 
-            </View>
-          }
-        />
-      )}
+              </View>
+            }
+          />
+        );
+      }}
     />
   );
 }

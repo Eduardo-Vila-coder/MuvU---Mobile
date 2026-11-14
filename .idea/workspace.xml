@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AirCodeReview">{}</component>
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="ef70b5aa-6c2c-45b8-8022-31fe54b393b0" name="Changes" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="Stripe-y-Google-Maps" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Yerik-Vega&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Eduardo-Vila-coder/MuvU---Mobile.git&quot;,
+    &quot;accountId&quot;: &quot;6eb9140c-fe5d-4fe6-8aa6-8231e3662f9d&quot;
+  }
+}</component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.0354026214154937" />
+      <entry key="MS500" value="1.5126336189442968" />
+      <entry key="S2" value="1.8461585966002896" />
+      <entry key="S5" value="1.9353641238740924" />
+      <entry key="S10" value="1.9671422701565835" />
+      <entry key="S30" value="1.9964746804399711" />
+      <entry key="S60" value="2.2160372165909807" />
+      <entry key="M2" value="3.618214237358145" />
+      <entry key="M5" value="10.28009232967922" />
+      <entry key="M10" value="22.68915286183836" />
+      <entry key="M15" value="34.59433533983845" />
+      <entry key="M30" value="61.3422109310728" />
+      <entry key="H1" value="88.34429836003488" />
+      <entry key="H2" value="108.62307527919322" />
+      <entry key="H4" value="121.25675802357877" />
+      <entry key="D1" value="133.37907989905335" />
+      <entry key="W1" value="135.62132507693042" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="0.0" />
+      <entry key="S5" value="0.0" />
+      <entry key="S10" value="0.0" />
+      <entry key="S30" value="0.0" />
+      <entry key="S60" value="0.0" />
+      <entry key="M2" value="0.0" />
+      <entry key="M5" value="0.0" />
+      <entry key="M10" value="0.0" />
+      <entry key="M15" value="0.0" />
+      <entry key="M30" value="0.0" />
+      <entry key="H1" value="0.0" />
+      <entry key="H2" value="0.0" />
+      <entry key="H4" value="0.0" />
+      <entry key="D1" value="0.0" />
+      <entry key="W1" value="0.0" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="0.9779642756539457" />
+      <entry key="MS500" value="1.491054688000418" />
+      <entry key="S2" value="1.8390024187450302" />
+      <entry key="S5" value="1.9323126890142792" />
+      <entry key="S10" value="1.9655828708015586" />
+      <entry key="S30" value="1.9959457158329381" />
+      <entry key="S60" value="2.215752184962114" />
+      <entry key="M2" value="3.6180135444038553" />
+      <entry key="M5" value="10.279908719719954" />
+      <entry key="M10" value="22.68892476637402" />
+      <entry key="M15" value="34.59406524948198" />
+      <entry key="M30" value="61.34191997447706" />
+      <entry key="H1" value="88.34406743855064" />
+      <entry key="H2" value="108.62292668584915" />
+      <entry key="H4" value="121.25667325934491" />
+      <entry key="D1" value="133.37906408401966" />
+      <entry key="W1" value="135.62132277286133" />
+    </decayedShown>
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1,
+  &quot;fromUser&quot;: false
+}</component>
+  <component name="ProjectId" id="3M1PGOSWmxpp9vty4Vii6p884Xs" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "ignore.virus.scanning.warn.message": "true",
+    "javascript.preferred.runtime.type.id": "node",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "ts.external.directory.path": "C:\\Users\\Asus\\WebstormProjects\\MuvU---Mobile\\node_modules\\typescript\\lib"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-56aff7b04f6f-JavaScript-WS-263.7307.202" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ef70b5aa-6c2c-45b8-8022-31fe54b393b0" name="Changes" comment="" />
+      <created>1794515004342</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1794515004342</updated>
+      <workItem from="1794515005382" duration="7101000" />
+      <workItem from="1794535549383" duration="383000" />
+      <workItem from="1794586575195" duration="110000" />
+      <workItem from="1794692183962" duration="133000" />
+    </task>
+    <task id="LOCAL-00001" summary="feat: Incorporación de pagos mediante Stripe para promociones de habitaciones destacadas.&#10;&#10;Añadir la pantalla de promoción para propietarios y el flujo de confirmación de la intención de pago (payment intent) mediante Stripe PaymentSheet; implementar la gestión de enlaces profundos (deep links) y soporte para Google Pay. Configurar las variables de entorno de Stripe y de la API, actualizar los tipos de pago y mejorar la restauración de los tokens de autenticación.&#10;&#10;Añadir la configuración de ESLint y los archivos de proyecto para el IDE.">
+      <option name="closed" value="true" />
+      <created>1794527544223</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1794527544223</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="feat: stripe ya corre" />
+    <MESSAGE value="feat: Incorporación de pagos mediante Stripe para promociones de habitaciones destacadas.&#10;&#10;Añadir la pantalla de promoción para propietarios y el flujo de confirmación de la intención de pago (payment intent) mediante Stripe PaymentSheet; implementar la gestión de enlaces profundos (deep links) y soporte para Google Pay. Configurar las variables de entorno de Stripe y de la API, actualizar los tipos de pago y mejorar la restauración de los tokens de autenticación.&#10;&#10;Añadir la configuración de ESLint y los archivos de proyecto para el IDE." />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: Incorporación de pagos mediante Stripe para promociones de habitaciones destacadas.&#10;&#10;Añadir la pantalla de promoción para propietarios y el flujo de confirmación de la intención de pago (payment intent) mediante Stripe PaymentSheet; implementar la gestión de enlaces profundos (deep links) y soporte para Google Pay. Configurar las variables de entorno de Stripe y de la API, actualizar los tipos de pago y mejorar la restauración de los tokens de autenticación.&#10;&#10;Añadir la configuración de ESLint y los archivos de proyecto para el IDE." />
+  </component>
+</project>
