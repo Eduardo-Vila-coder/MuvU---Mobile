@@ -66,6 +66,7 @@ function AdvertiseRoomScreen({ roomId }: { roomId: number }) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [pendingConfirmationId, setPendingConfirmationId] = useState<string | null>(null);
   const [payment, setPayment] = useState<AdPayment | null>(null);
+  const activePayment = payment ? undefined : findActivePayment(payments ?? [], roomId);
 
   async function activatePayment(paymentIntentId: string) {
     setConfirming(true);
@@ -84,7 +85,10 @@ function AdvertiseRoomScreen({ roomId }: { roomId: number }) {
   }
 
   async function startPayment() {
-    if (!room) return;
+    if (
+      !room || processing || confirming || payment || pendingConfirmationId ||
+      activePayment || paymentsLoading || paymentsError || !payments
+    ) return;
     setProcessing(true);
     setErrorMessage(null);
     try {
@@ -131,9 +135,6 @@ function AdvertiseRoomScreen({ roomId }: { roomId: number }) {
       />
     );
   }
-
-  // Only before paying here: after a successful payment the confirmation is shown instead
-  const activePayment = payment ? undefined : findActivePayment(payments, roomId);
 
   return (
     <ScrollView
