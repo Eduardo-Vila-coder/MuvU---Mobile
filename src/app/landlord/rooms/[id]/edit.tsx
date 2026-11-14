@@ -43,6 +43,8 @@ export default function EditRoomScreen() {
       <RoomForm
         initialValues={{
           address: room.direccion,
+          latitud: room.latitud,
+          longitud: room.longitud,
           price: String(room.precio),
           area: room.area === null ? '' : String(room.area),
         }}

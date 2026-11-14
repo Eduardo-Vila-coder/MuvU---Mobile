@@ -9,11 +9,14 @@ import { Button } from '../ui/Button';
 import { FormAlert } from '../ui/FormAlert';
 import { TextField } from '../ui/TextField';
 import { AddressInput } from './AddressInput';
+import { isMapPoint, type MapPoint } from '../maps/types';
 
 export interface RoomFormValues {
   address: string;
   price: string; // typed as text, converted on submit
   area: string;
+  latitud?: number;
+  longitud?: number;
 }
 
 function validateRoom(values: RoomFormValues): FormErrors<RoomFormValues> {
@@ -42,10 +45,18 @@ export function RoomForm({ initialValues, submitLabel, onSubmit }: RoomFormProps
   const { values, setValue, getError, validateAll, setServerErrors } = useForm(initialValues, validateRoom);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [location, setLocation] = useState<MapPoint | null>(() => {
+    const point = { lat: initialValues.latitud, lng: initialValues.longitud };
+    return isMapPoint(point) ? point : null;
+  });
 
   async function handleSubmit() {
     setFormError(null);
     if (!validateAll()) return;
+    if (!location) {
+      setFormError('Selecciona una dirección o confirma su ubicación en el mapa antes de continuar.');
+      return;
+    }
 
     setSubmitting(true);
     try {
@@ -53,6 +64,8 @@ export function RoomForm({ initialValues, submitLabel, onSubmit }: RoomFormProps
         direccion: values.address.trim(),
         precio: Number(values.price),
         area: Number(values.area),
+        latitud: location.lat,
+        longitud: location.lng,
       });
     } catch (err) {
       setServerErrors(
@@ -69,7 +82,8 @@ export function RoomForm({ initialValues, submitLabel, onSubmit }: RoomFormProps
       {formError && <FormAlert message={formError} />}
       <AddressInput
         value={values.address}
-        onChange={(text) => setValue('address', text)}
+        coordinates={location}
+        onChange={(text, point) => { setValue('address', text); setLocation(point); }}
         error={getError('address')}
       />
       <TextField

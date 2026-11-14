@@ -3,6 +3,7 @@ import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-nat
 import { router } from 'expo-router';
 import { getNearbyRooms } from '@/api/rooms';
 import { RoomCard } from '@/components/rooms/RoomCard';
+import { NearbyRoomsMap } from '@/components/rooms/NearbyRoomsMap';
 import { RoomListSkeleton } from '@/components/rooms/RoomCardSkeleton';
 import { UniversityPicker } from '@/components/UniversityPicker';
 import { Button } from '@/components/ui/Button';
@@ -15,9 +16,10 @@ import { useCurrentLocation } from '@/hooks/useCurrentLocation';
 import { usePagedList } from '@/hooks/usePagedList';
 import { useUniversities } from '@/hooks/useUniversities';
 import type { Room } from '@/types/room';
+import type { University } from '@/types/university';
 import { findNearestUniversity } from '@/utils/geo';
 
-const RADIUS_OPTIONS = [1, 3, 5, 10];
+const RADIUS_OPTIONS = Array.from({ length: 10 }, (_, index) => index + 1);
 const DEFAULT_RADIUS = 5;
 
 // EP 012 - rooms near a university. GPS picks the nearest one; manual choice as fallback
@@ -104,6 +106,7 @@ export default function NearbyScreen() {
       key={`${universityId}-${radiusKm}`}
       universityId={universityId}
       radiusKm={radiusKm}
+      university={universities.find((university) => university.id === universityId)}
       header={filters}
       onWidenRadius={setRadiusKm}
     />
@@ -113,11 +116,12 @@ export default function NearbyScreen() {
 interface NearbyRoomsListProps {
   universityId: number;
   radiusKm: number;
+  university?: University;
   header: ReactElement;
   onWidenRadius: (radius: number) => void;
 }
 
-function NearbyRoomsList({ universityId, radiusKm, header, onWidenRadius }: NearbyRoomsListProps) {
+function NearbyRoomsList({ universityId, radiusKm, university, header, onWidenRadius }: NearbyRoomsListProps) {
   const list = usePagedList<Room>((params, signal) =>
     getNearbyRooms({ ...params, universidadId: universityId, radioKm: radiusKm }, signal),
   );
@@ -128,7 +132,11 @@ function NearbyRoomsList({ universityId, radiusKm, header, onWidenRadius }: Near
       list={list}
       keyExtractor={(room) => String(room.id)}
       itemLabel="habitaciones"
-      header={header}
+      header={<View style={styles.header}>
+        {header}
+        {university && <NearbyRoomsMap rooms={list.items} university={university} radiusKm={radiusKm}
+          hasMore={list.hasMore} onLoadMore={list.loadMore} loadingMore={list.isLoadingMore} />}
+      </View>}
       loadingPlaceholder={<RoomListSkeleton />}
       emptyState={
         <EmptyState
@@ -148,5 +156,6 @@ function NearbyRoomsList({ universityId, radiusKm, header, onWidenRadius }: Near
 }
 
 const styles = StyleSheet.create({
+  header: { gap: 16 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
 });
