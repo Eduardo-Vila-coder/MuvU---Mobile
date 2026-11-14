@@ -102,6 +102,7 @@ export default function MyRoomsScreen() {
       renderItem={(room) => (
         <RoomCard
           room={room}
+          onPress={() => router.push(`/rooms/${room.id}`)}
           actions={
             <View style={styles.actions}>
 
