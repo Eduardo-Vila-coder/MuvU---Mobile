@@ -1,10 +1,14 @@
-export type PaymentMethod = 'TARJETA_DEBITO' | 'TARJETA_CREDITO';
+export type PaymentMethod = 'TARJETA' | 'APPLE_PAY' | 'GOOGLE_PAY';
 
 // EP 034 - body (PagoPublicidadRequestDTO)
-export interface CreateAdPaymentRequest {
+export interface CreateAdPaymentIntentRequest {
   habitacionId: number;
-  monto: number; // only 30 (30 days) or 54 (60 days)
-  metodoPago: PaymentMethod;
+  monto: number;
+}
+
+export interface CreateAdPaymentIntentResponse {
+  paymentIntentId: string;
+  clientSecret: string;
 }
 
 // EP 034 / EP 035 - PagoPublicidadResponseDTO
@@ -30,6 +34,7 @@ export const AD_PLANS: AdPlan[] = [
 ];
 
 export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
-  TARJETA_DEBITO: 'Tarjeta de débito',
-  TARJETA_CREDITO: 'Tarjeta de crédito',
+  TARJETA: 'Tarjeta',
+  APPLE_PAY: 'Apple Pay',
+  GOOGLE_PAY: 'Google Pay',
 };

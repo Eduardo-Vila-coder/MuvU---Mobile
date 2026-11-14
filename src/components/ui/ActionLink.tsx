@@ -7,13 +7,14 @@ interface ActionLinkProps {
   label: string;
   onPress: () => void;
   danger?: boolean;
+  disabled?: boolean;
 }
 
 // Small icon + text action, used inside cards
-export function ActionLink({ icon, label, onPress, danger = false }: ActionLinkProps) {
-  const color = danger ? colors.danger : colors.primary;
+export function ActionLink({ icon, label, onPress, danger = false, disabled = false }: ActionLinkProps) {
+  const color = disabled ? colors.textMuted : danger ? colors.danger : colors.primary;
   return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.7} style={styles.action}>
+    <TouchableOpacity onPress={onPress} disabled={disabled} activeOpacity={0.7} style={styles.action}>
       <Ionicons name={icon} size={18} color={color} />
       <Text style={[styles.text, { color }]}>{label}</Text>
     </TouchableOpacity>

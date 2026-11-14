@@ -20,7 +20,11 @@ export interface PagedListState<T> {
 
 // Infinite scroll over a paginated endpoint: page 0 first, next pages are appended.
 // If the filters change, the parent gives the list a new `key` so this hook starts over.
-export function usePagedList<T>(fetchPage: PageFetcher<T>, pageSize = 10): PagedListState<T> {
+// T needs an `id` so repeated items between pages can be skipped.
+export function usePagedList<T extends { id: number }>(
+  fetchPage: PageFetcher<T>,
+  pageSize = 10,
+): PagedListState<T> {
   const [items, setItems] = useState<T[]>([]);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -36,7 +40,12 @@ export function usePagedList<T>(fetchPage: PageFetcher<T>, pageSize = 10): Paged
 
     fetchPage({ page, size: pageSize }, controller.signal)
       .then((result) => {
-        setItems((prev) => (page === 0 ? result.content : [...prev, ...result.content]));
+        setItems((prev) => {
+          if (page === 0) return result.content;
+          // If the backend order shifted between pages, skip items we already have
+          const knownIds = new Set(prev.map((item) => item.id));
+          return [...prev, ...result.content.filter((item) => !knownIds.has(item.id))];
+        });
         setTotalPages(result.page.totalPages);
         setTotalElements(result.page.totalElements);
       })

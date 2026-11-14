@@ -1,9 +1,23 @@
 import { api } from './client';
-import type { AdPayment, CreateAdPaymentRequest } from '../types/payment';
+import type {
+  AdPayment,
+  CreateAdPaymentIntentRequest,
+  CreateAdPaymentIntentResponse,
+} from '@/types/payment';
 
-// EP 034 - POST /pagos-publicidad (ARRENDADOR, owner of the room). Highlights the room.
-export async function createAdPayment(body: CreateAdPaymentRequest): Promise<AdPayment> {
-  const { data } = await api.post<AdPayment>('/pagos-publicidad', body);
+// POST /pagos-publicidad/intenciones (ARRENDADOR, owner of the room).
+export async function createAdPaymentIntent(
+  body: CreateAdPaymentIntentRequest,
+): Promise<CreateAdPaymentIntentResponse> {
+  const { data } = await api.post<CreateAdPaymentIntentResponse>('/pagos-publicidad/intenciones', body);
+  return data;
+}
+
+// Confirm only after the native payment flow reports success.
+export async function confirmAdPayment(paymentIntentId: string): Promise<AdPayment> {
+  const { data } = await api.post<AdPayment>(
+    `/pagos-publicidad/${encodeURIComponent(paymentIntentId)}/confirmar`,
+  );
   return data;
 }
 
