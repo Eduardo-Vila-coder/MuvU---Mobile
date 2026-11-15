@@ -43,7 +43,7 @@
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "MuvU usa tu ubicación para encontrar la universidad más cercana a ti."
+          "locationWhenInUsePermission": "MuvU usa tu ubicación para encontrar universidades cercanas y ubicar tu habitación en el mapa."
         }
       ],
       [

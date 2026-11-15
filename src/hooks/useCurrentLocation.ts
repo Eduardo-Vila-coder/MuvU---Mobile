@@ -20,7 +20,7 @@ export function useCurrentLocation() {
 
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        setErrorMessage('No diste permiso de ubicación. Puedes elegir tu universidad manualmente.');
+        setErrorMessage('No diste permiso de ubicación. Puedes seleccionar la ubicación manualmente.');
         return null;
       }
 
