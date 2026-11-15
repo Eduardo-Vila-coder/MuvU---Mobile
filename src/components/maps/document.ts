@@ -36,6 +36,18 @@ button:disabled{opacity:.5}#suggestions{position:absolute;top:58px;left:10px;rig
   const search = document.getElementById('search');
   const suggestions = document.getElementById('suggestions');
   const confirm = document.getElementById('confirm');
+  // The map must stay inside the app: places (KFC, banks...) and "view larger map"
+  // links would otherwise open the device browser or a new tab.
+  document.addEventListener('click', function(event){
+    const target = event.target;
+    const link = target && target.closest ? target.closest('a[href]') : null;
+    const href = link ? (link.getAttribute('href') || '').trim() : '';
+    if (!href || href.charAt(0) === '#') return;
+    event.preventDefault();
+    event.stopPropagation();
+    error('Los enlaces externos del mapa están desactivados. Busca la dirección o toca el mapa.');
+  }, true);
+  window.open = function(){ return null; };
   let state = {}, maps, map, places, geocoder, info, pin, draft;
   let overlays = [], routeMarkers = [], polylines = [], routeCache = {}, routeKey = '', markersKey = '', activeMarker;
   let routeVersion = 0, searchVersion = 0, selectionVersion = 0, searchTimer, sessionToken;
@@ -226,7 +238,7 @@ button:disabled{opacity:.5}#suggestions{position:absolute;top:58px;left:10px;rig
     try {
       maps=window.google.maps;
       await maps.importLibrary('maps');
-      map=new maps.Map(document.getElementById('map'),{center:{lat:-12.0464,lng:-77.0428},zoom:12,mapTypeControl:false,streetViewControl:false,fullscreenControl:false,gestureHandling:'greedy'});
+      map=new maps.Map(document.getElementById('map'),{center:{lat:-12.0464,lng:-77.0428},zoom:12,mapTypeControl:false,streetViewControl:false,fullscreenControl:false,clickableIcons:false,gestureHandling:'greedy'});
       geocoder=new maps.Geocoder();info=new maps.InfoWindow();
       map.addListener('click',function(event){if(state.picker) setDraft(point(event.latLng))});
       error('');render();send({type:'ready'});

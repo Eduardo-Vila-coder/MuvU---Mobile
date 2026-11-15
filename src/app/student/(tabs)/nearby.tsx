@@ -1,13 +1,13 @@
-import { useState, type ReactElement } from 'react';
+import { useEffect, useRef, useState, type ReactElement } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { getNearbyRooms } from '@/api/rooms';
+import { RadiusSlider } from '@/components/rooms/RadiusSlider';
 import { RoomCard } from '@/components/rooms/RoomCard';
 import { NearbyRoomsMap } from '@/components/rooms/NearbyRoomsMap';
 import { RoomListSkeleton } from '@/components/rooms/RoomCardSkeleton';
 import { UniversityPicker } from '@/components/UniversityPicker';
 import { Button } from '@/components/ui/Button';
-import { Chip } from '@/components/ui/Chip';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { FormAlert } from '@/components/ui/FormAlert';
 import { PagedList } from '@/components/ui/PagedList';
@@ -19,15 +19,16 @@ import type { Room } from '@/types/room';
 import type { University } from '@/types/university';
 import { findNearestUniversity } from '@/utils/geo';
 
-const RADIUS_OPTIONS = Array.from({ length: 10 }, (_, index) => index + 1);
-const DEFAULT_RADIUS = 5;
+const MIN_RADIUS_KM = 1;
+const MAX_RADIUS_KM = 10;
+const DEFAULT_RADIUS_KM = 5;
 
 // EP 012 - rooms near a university. GPS picks the nearest one; manual choice as fallback
 export default function NearbyScreen() {
   const { universities, loading: loadingUniversities, error: universitiesError } = useUniversities();
   const { loading: locating, errorMessage: locationError, requestLocation } = useCurrentLocation();
   const [universityId, setUniversityId] = useState<number | null>(null);
-  const [radiusKm, setRadiusKm] = useState(DEFAULT_RADIUS);
+  const [radiusKm, setRadiusKm] = useState(DEFAULT_RADIUS_KM);
   const [locationInfo, setLocationInfo] = useState<string | null>(null);
 
   // GPS -> nearest university (Haversine in utils/geo)
@@ -73,17 +74,14 @@ export default function NearbyScreen() {
         />
       )}
 
-      <Text style={sharedStyles.label}>Radio de búsqueda</Text>
-      <View style={styles.chips}>
-        {RADIUS_OPTIONS.map((radius) => (
-          <Chip
-            key={radius}
-            label={`${radius} km`}
-            selected={radius === radiusKm}
-            onPress={() => setRadiusKm(radius)}
-          />
-        ))}
-      </View>
+      {/* A key reseeds the slider draft when the radius changes from somewhere else. */}
+      <RadiusSlider
+        key={radiusKm}
+        value={radiusKm}
+        minimumValue={MIN_RADIUS_KM}
+        maximumValue={MAX_RADIUS_KM}
+        onChange={setRadiusKm}
+      />
     </View>
   );
 
@@ -100,10 +98,10 @@ export default function NearbyScreen() {
     );
   }
 
-  // A new key restarts the list from page 0 when a filter changes
+  // Only the university remounts the list; a new radius refreshes it in place (see NearbyRoomsList).
   return (
     <NearbyRoomsList
-      key={`${universityId}-${radiusKm}`}
+      key={universityId}
       universityId={universityId}
       radiusKm={radiusKm}
       university={universities.find((university) => university.id === universityId)}
@@ -125,7 +123,16 @@ function NearbyRoomsList({ universityId, radiusKm, university, header, onWidenRa
   const list = usePagedList<Room>((params, signal) =>
     getNearbyRooms({ ...params, universidadId: universityId, radioKm: radiusKm }, signal),
   );
-  const widerRadius = RADIUS_OPTIONS.find((radius) => radius > radiusKm);
+  const reload = list.reload;
+  const previousRadius = useRef(radiusKm);
+  const widerRadius = radiusKm < MAX_RADIUS_KM ? radiusKm + 1 : undefined;
+
+  // A new radius refetches page 0 without unmounting the list or the map.
+  useEffect(() => {
+    if (previousRadius.current === radiusKm) return;
+    previousRadius.current = radiusKm;
+    reload();
+  }, [radiusKm, reload]);
 
   return (
     <PagedList
@@ -157,5 +164,4 @@ function NearbyRoomsList({ universityId, radiusKm, university, header, onWidenRa
 
 const styles = StyleSheet.create({
   header: { gap: 16 },
-  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
 });

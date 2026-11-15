@@ -28,7 +28,7 @@ async function harness({ compute, geocode, autocomplete } = {}) {
   }
   const elements = Object.fromEntries(['picker', 'map', 'status', 'search', 'suggestions', 'confirm'].map((id) => [id, new Element()]));
   const events = [], markers = [], polylines = [], requests = [], infos = [], timers = new Map(), listeners = {};
-  let timerId = 0;
+  let timerId = 0, mapOptions;
   const map = { setCenter() {}, setZoom() {}, fitBounds() {}, panTo() {}, addListener(name, callback) { listeners[name] = callback; } };
   class Marker {
     listeners = {};
@@ -42,7 +42,7 @@ async function harness({ compute, geocode, autocomplete } = {}) {
     const line = { setMap(value) { this.map = value; } }; polylines.push(line); return [line];
   } });
   const maps = {
-    Map: class { constructor() { return map; } }, Marker,
+    Map: class { constructor(_element, options) { mapOptions = options; return map; } }, Marker,
     LatLngBounds: class { extend() {} },
     SymbolPath: { CIRCLE: 'circle' },
     Circle: class { setMap() {} getBounds() { return {}; } },
@@ -62,7 +62,7 @@ async function harness({ compute, geocode, autocomplete } = {}) {
       return {};
     },
   };
-  const document = { getElementById: (id) => elements[id], createElement: () => new Element(), head: new Element() };
+  const document = { getElementById: (id) => elements[id], createElement: () => new Element(), head: new Element(), listeners: {}, addEventListener(name, callback) { this.listeners[name] = callback; } };
   const window = {
     google: { maps }, ReactNativeWebView: { postMessage: (raw) => events.push(JSON.parse(raw)) },
     addEventListener() {},
@@ -76,7 +76,7 @@ async function harness({ compute, geocode, autocomplete } = {}) {
   new vm.Script(source).runInContext(context);
   await window.__muvuReady();
   return {
-    window, events, elements, markers, listeners, requests, polylines, infos,
+    window, events, elements, markers, listeners, requests, polylines, infos, document, mapOptions,
     update(state) { window.__muvuUpdate(state); },
     route,
     async search(input) {
@@ -96,6 +96,22 @@ test('bridge rejects malformed messages, invalid coordinates and unrelated event
   const injected = '</script><script>window.injected=true</script>\u2028';
   assert.ok(!scriptJson(injected).includes('<'));
   assert.ok(!createMapDocument(injected).includes(injected));
+});
+
+test('places and external map links never leave the embedded map', async () => {
+  const h = await harness();
+  assert.equal(h.mapOptions.clickableIcons, false);
+  assert.equal(h.window.open('https://maps.google.com/?cid=1'), null);
+
+  let prevented = false;
+  const external = { closest: () => ({ getAttribute: () => 'https://maps.google.com/?cid=1' }) };
+  h.document.listeners.click({ target: external, preventDefault() { prevented = true; }, stopPropagation() {} });
+  assert.equal(prevented, true);
+
+  prevented = false;
+  const internal = { closest: () => ({ getAttribute: () => '#suggestions' }) };
+  h.document.listeners.click({ target: internal, preventDefault() { prevented = true; }, stopPropagation() {} });
+  assert.equal(prevented, false);
 });
 
 test('moving the pin never saves until reverse geocoding is confirmed', async () => {

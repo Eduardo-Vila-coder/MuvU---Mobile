@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Modal, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, Text, View } from 'react-native';
 import { colors, sharedStyles } from '@/constants/theme';
 import { useCurrentLocation } from '@/hooks/useCurrentLocation';
 import { GoogleMap } from '../maps/GoogleMap';
@@ -15,8 +14,8 @@ interface AddressInputProps {
   error?: string;
 }
 
+// The search, pin and confirmation live in the same card, so publishing stays on one screen.
 export function AddressInput({ value, coordinates, onChange, error }: AddressInputProps) {
-  const [open, setOpen] = useState(false);
   const [locationRequest, setLocationRequest] = useState<MapState['locationRequest']>();
   const { requestLocation, loading, errorMessage } = useCurrentLocation();
   const state = useMemo<MapState>(() => ({
@@ -31,29 +30,15 @@ export function AddressInput({ value, coordinates, onChange, error }: AddressInp
   return (
     <View style={styles.field}>
       <Text style={sharedStyles.label}>Dirección</Text>
-      {!!value && <Text style={styles.address}>{value}</Text>}
-      <Button title={value ? 'Cambiar ubicación en el mapa' : 'Seleccionar dirección en el mapa'} variant="secondary"
-        onPress={() => { setLocationRequest(undefined); setOpen(true); }} />
-      <Text style={sharedStyles.muted}>Busca una dirección o confirma un punto en el mapa.</Text>
+      <Text style={value ? styles.address : sharedStyles.muted}>
+        {value || 'Busca tu dirección o confirma el punto exacto en el mapa.'}
+      </Text>
+      <Button title="Usar mi ubicación" onPress={locate} loading={loading} />
+      {errorMessage && <FormAlert variant="info" message={errorMessage} />}
       {!!error && <FormAlert message={error} />}
-      <Modal visible={open} animationType="slide" onRequestClose={() => setOpen(false)}>
-        <SafeAreaView style={sharedStyles.screen}>
-          <View style={styles.header}>
-            <Text style={sharedStyles.sectionTitle}>Ubicación de la habitación</Text>
-            <Button title="Cerrar" variant="secondary" onPress={() => setOpen(false)} />
-          </View>
-          <ScrollView contentContainerStyle={sharedStyles.content} keyboardShouldPersistTaps="handled">
-            <Button title="Usar mi ubicación" onPress={locate} loading={loading} />
-            {errorMessage && <FormAlert variant="info" message={errorMessage} />}
-            {open && <GoogleMap height={470} state={state} onEvent={(event) => {
-              if (event.type === 'address') {
-                onChange(event.address, event.point);
-                setOpen(false);
-              }
-            }} />}
-          </ScrollView>
-        </SafeAreaView>
-      </Modal>
+      <GoogleMap height={420} state={state} onEvent={(event) => {
+        if (event.type === 'address') onChange(event.address, event.point);
+      }} />
     </View>
   );
 }
@@ -61,5 +46,4 @@ export function AddressInput({ value, coordinates, onChange, error }: AddressInp
 const styles = StyleSheet.create({
   field: { gap: 8 },
   address: { color: colors.text, fontSize: 15 },
-  header: { padding: 16, gap: 12, borderBottomWidth: 1, borderColor: colors.border },
 });

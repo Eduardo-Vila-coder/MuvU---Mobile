@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { Linking, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { createMapDocument, scriptJson } from './document';
 import { parseMapEvent, type MapEvent, type MapState } from './types';
@@ -37,14 +37,13 @@ export function MapSurface({ apiKey, state, onEvent }: MapSurfaceProps) {
       javaScriptEnabled
       domStorageEnabled
       scrollEnabled={false}
-      onShouldStartLoadWithRequest={(request) => {
-        if (request.isTopFrame === false || request.url === 'about:blank' || request.url === source.baseUrl) return true;
-        if (request.url.startsWith('https://')) void Linking.openURL(request.url).catch(() => undefined);
-        return false;
-      }}
-      onOpenWindow={({ nativeEvent }) => {
-        if (nativeEvent.targetUrl.startsWith('https://')) void Linking.openURL(nativeEvent.targetUrl).catch(() => undefined);
-      }}
+      // Keep every navigation inside the embedded document: place links and
+      // Google Maps popups must never leave the app.
+      setSupportMultipleWindows={false}
+      onShouldStartLoadWithRequest={(request) =>
+        request.isTopFrame === false || request.url === 'about:blank' || request.url === source.baseUrl
+      }
+      onOpenWindow={() => undefined}
       onLoadStart={() => { ready.current = false; }}
       onError={() => onEvent({ type: 'error', message: 'No se pudo cargar el mapa. Revisa tu conexión.' })}
       onMessage={({ nativeEvent }) => {

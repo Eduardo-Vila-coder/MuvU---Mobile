@@ -32,6 +32,7 @@ export function MapSurface({ apiKey, state, onEvent }: MapSurfaceProps) {
   }, [state]);
 
   return <iframe ref={frame} title="Mapa interactivo de Google" srcDoc={html}
+    sandbox="allow-scripts allow-same-origin allow-forms"
     allow="fullscreen" referrerPolicy="strict-origin-when-cross-origin"
     style={{ border: 0, width: '100%', height: '100%' }} />;
 }
