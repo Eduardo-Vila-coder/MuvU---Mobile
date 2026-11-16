@@ -3,6 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
 import { getStudentProfile } from '@/api/students';
 import { RatingStars } from '@/components/ratings/RatingStars';
+import { Avatar } from '@/components/ui/Avatar';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { ScreenLoader } from '@/components/ui/ScreenLoader';
 import { colors, sharedStyles } from '@/constants/theme';
@@ -32,9 +33,7 @@ export default function StudentProfileScreen() {
     <ScrollView style={sharedStyles.screen} contentContainerStyle={sharedStyles.content}>
       <View style={sharedStyles.card}>
         <View style={styles.header}>
-          <View style={styles.avatar}>
-            <Ionicons name="person" size={26} color={colors.primary} />
-          </View>
+          <Avatar name={student.nombre} src={student.fotoPerfil} size="lg" />
           <View style={styles.headerText}>
             <View style={styles.nameRow}>
               <Text style={styles.name}>{student.nombre}</Text>
@@ -66,14 +65,6 @@ export default function StudentProfileScreen() {
 
 const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  avatar: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.primaryLight,
-  },
   headerText: { flex: 1, gap: 4 },
   nameRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   name: { fontSize: 18, fontWeight: '700', color: colors.text },

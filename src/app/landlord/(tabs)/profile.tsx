@@ -9,6 +9,7 @@ import { RatingStars } from '@/components/ratings/RatingStars';
 import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { FormAlert } from '@/components/ui/FormAlert';
+import { ProfilePhotoPicker } from '@/components/ui/ProfilePhotoPicker';
 import { ScreenLoader } from '@/components/ui/ScreenLoader';
 import { TextField } from '@/components/ui/TextField';
 import { colors, sharedStyles } from '@/constants/theme';
@@ -103,6 +104,12 @@ function ProfileContent({ landlord, onSaved }: { landlord: Landlord; onSaved: ()
     }
   }
 
+  // Profile photo: saved right away (dniFoto null = the backend keeps the current DNI)
+  async function handleSavePhoto(url: string) {
+    await updateLandlord(landlord.id, { nombre: landlord.nombre, dniFoto: null, fotoPerfil: url });
+    onSaved();
+  }
+
   async function handleSave() {
     setFormError(null);
     if (!validateAll()) return;
@@ -166,6 +173,7 @@ function ProfileContent({ landlord, onSaved }: { landlord: Landlord; onSaved: ()
       keyboardShouldPersistTaps="handled"
     >
       <View style={sharedStyles.card}>
+        <ProfilePhotoPicker name={landlord.nombre} photo={landlord.fotoPerfil} onSave={handleSavePhoto} />
         <Text style={styles.name}>{landlord.nombre}</Text>
         <Text style={sharedStyles.muted}>{landlord.correo}</Text>
 

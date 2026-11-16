@@ -3,11 +3,12 @@ import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { getErrorMessage, getErrorStatus } from '@/api/errors';
-import { deleteStudent, getStudent } from '@/api/students';
+import { deleteStudent, getStudent, updateStudent } from '@/api/students';
 import { ProfileForm } from '@/components/students/ProfileForm';
 import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { FormAlert } from '@/components/ui/FormAlert';
+import { ProfilePhotoPicker } from '@/components/ui/ProfilePhotoPicker';
 import { ScreenLoader } from '@/components/ui/ScreenLoader';
 import { colors, sharedStyles } from '@/constants/theme';
 import { useAuth } from '@/hooks/useAuth';
@@ -78,6 +79,17 @@ function ProfileContent({ student, universities, universitiesError, onSaved }: P
     );
   }
 
+  // Profile photo: saved right away (PUT needs name and university too, so we send the current ones)
+  async function handleSavePhoto(url: string) {
+    if (initialUniversityId === null) throw new Error('Primero elige tu universidad en "Editar perfil".');
+    await updateStudent(student.id, {
+      nombre: student.nombre,
+      universidadId: initialUniversityId,
+      fotoPerfil: url,
+    });
+    onSaved();
+  }
+
   async function handleDeleteAccount() {
     setDeleting(true);
     try {
@@ -101,6 +113,7 @@ function ProfileContent({ student, universities, universitiesError, onSaved }: P
       keyboardShouldPersistTaps="handled"
     >
       <View style={sharedStyles.card}>
+        <ProfilePhotoPicker name={student.nombre} photo={student.fotoPerfil} onSave={handleSavePhoto} />
         <Text style={styles.name}>{student.nombre}</Text>
         <View style={styles.row}>
           <Ionicons name="mail-outline" size={16} color={colors.textMuted} />
