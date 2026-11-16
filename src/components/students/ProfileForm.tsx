@@ -11,22 +11,25 @@ import { useForm, type FormErrors } from '@/hooks/useForm';
 import { useToast } from '@/hooks/useToast';
 import type { Student } from '@/types/student';
 import type { University } from '@/types/university';
-import { validateName } from '@/utils/validators';
+import { normalizePhone, validateName, validatePhone } from '@/utils/validators';
 
 interface ProfileValues {
   name: string;
   universityId: number | null;
+  phone: string;
 }
 
 const SERVER_FIELDS: Record<string, keyof ProfileValues> = {
   nombre: 'name',
   universidadId: 'universityId',
+  telefono: 'phone',
 };
 
 function validateProfile(values: ProfileValues): FormErrors<ProfileValues> {
   return {
     name: validateName(values.name),
     universityId: values.universityId === null ? 'Elige tu universidad' : undefined,
+    phone: validatePhone(values.phone),
   };
 }
 
@@ -37,11 +40,11 @@ interface ProfileFormProps {
   onSaved: () => void;
 }
 
-// EP 032 - name and university (email and password can't change here)
+// EP 032 - name, university and phone (email and password can't change here)
 export function ProfileForm({ student, universities, initialUniversityId, onSaved }: ProfileFormProps) {
   const { showToast } = useToast();
   const { values, setValue, getError, validateAll, setServerErrors } = useForm<ProfileValues>(
-    { name: student.nombre, universityId: initialUniversityId },
+    { name: student.nombre, universityId: initialUniversityId, phone: student.telefono ?? '' },
     validateProfile,
   );
   const [saving, setSaving] = useState(false);
@@ -53,7 +56,11 @@ export function ProfileForm({ student, universities, initialUniversityId, onSave
 
     setSaving(true);
     try {
-      await updateStudent(student.id, { nombre: values.name.trim(), universidadId: values.universityId });
+      await updateStudent(student.id, {
+        nombre: values.name.trim(),
+        universidadId: values.universityId,
+        telefono: normalizePhone(values.phone), // '' = no phone
+      });
       showToast('Perfil actualizado');
       onSaved();
     } catch (err) {
@@ -84,6 +91,17 @@ export function ProfileForm({ student, universities, initialUniversityId, onSave
         />
         {getError('universityId') && <Text style={styles.error}>{getError('universityId')}</Text>}
       </View>
+      <TextField
+        label="Celular (opcional)"
+        value={values.phone}
+        onChangeText={(text) => setValue('phone', text)}
+        error={getError('phone')}
+        hint="Solo se comparte con la otra parte cuando se confirma una reserva"
+        placeholder="987 654 321"
+        keyboardType="phone-pad"
+        autoComplete="tel"
+        maxLength={15}
+      />
       <Text style={sharedStyles.muted}>El correo y la contraseña no se pueden cambiar desde aquí.</Text>
       <Button title={saving ? 'Guardando...' : 'Guardar cambios'} onPress={handleSave} loading={saving} />
     </View>

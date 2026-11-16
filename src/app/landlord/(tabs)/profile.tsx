@@ -20,22 +20,25 @@ import { useLandlordId } from '@/hooks/useLandlordId';
 import { useToast } from '@/hooks/useToast';
 import type { Landlord } from '@/types/landlord';
 import { pickPhoto } from '@/utils/pickPhoto';
-import { validateName, validateUrl } from '@/utils/validators';
+import { normalizePhone, validateName, validatePhone, validateUrl } from '@/utils/validators';
 
 interface ProfileValues {
   name: string;
   dniPhotoUrl: string;
+  phone: string;
 }
 
 const SERVER_FIELDS: Record<string, keyof ProfileValues> = {
   nombre: 'name',
   dniFoto: 'dniPhotoUrl',
+  telefono: 'phone',
 };
 
 function validateProfile(values: ProfileValues): FormErrors<ProfileValues> {
   return {
     name: validateName(values.name),
     dniPhotoUrl: validateUrl(values.dniPhotoUrl, { required: false }),
+    phone: validatePhone(values.phone),
   };
 }
 
@@ -76,7 +79,7 @@ function ProfileContent({ landlord, onSaved }: { landlord: Landlord; onSaved: ()
   const { signOut } = useAuth();
   const { showToast } = useToast();
   const { values, setValue, getError, validateAll, setServerErrors } = useForm(
-    { name: landlord.nombre, dniPhotoUrl: '' },
+    { name: landlord.nombre, dniPhotoUrl: '', phone: landlord.telefono ?? '' },
     validateProfile,
   );
   const [saving, setSaving] = useState(false);
@@ -119,6 +122,7 @@ function ProfileContent({ landlord, onSaved }: { landlord: Landlord; onSaved: ()
       await updateLandlord(landlord.id, {
         nombre: values.name.trim(),
         dniFoto: values.dniPhotoUrl.trim() || null, // empty -> the backend keeps the previous one
+        telefono: normalizePhone(values.phone), // '' = no phone
       });
       setValue('dniPhotoUrl', '');
       showToast('Perfil actualizado');
@@ -220,6 +224,17 @@ function ProfileContent({ landlord, onSaved }: { landlord: Landlord; onSaved: ()
           onChangeText={(text) => setValue('name', text)}
           error={getError('name')}
           autoComplete="name"
+        />
+        <TextField
+          label="Celular (opcional)"
+          value={values.phone}
+          onChangeText={(text) => setValue('phone', text)}
+          error={getError('phone')}
+          hint="Solo se comparte con la otra parte cuando se confirma una reserva"
+          placeholder="987 654 321"
+          keyboardType="phone-pad"
+          autoComplete="tel"
+          maxLength={15}
         />
 
         <Text style={sharedStyles.label}>Foto de tu DNI</Text>
