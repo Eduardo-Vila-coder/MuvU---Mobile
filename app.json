@@ -64,6 +64,23 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "a800aaa6-6ca9-4845-af40-7b35e9c03f94"
+      }
+    },
+    "owner": "lucasmcgamer",
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/a800aaa6-6ca9-4845-af40-7b35e9c03f94"
     }
   }
 }
