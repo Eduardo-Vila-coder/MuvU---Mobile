@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { PaymentSheetError, usePaymentSheet } from '@stripe/stripe-react-native';
+import { PaymentSheetError, usePaymentSheet } from '@/utils/stripe';
 import { router, useLocalSearchParams } from 'expo-router';
 import { confirmAdPayment, createAdPaymentIntent, getMyAdPayments } from '@/api/payments';
 import { getRoomById } from '@/api/rooms';
