@@ -22,6 +22,12 @@ export function RoomCard({ room, onPress, actions }: RoomCardProps) {
             <Text style={styles.badgeText}>Destacada</Text>
           </View>
         )}
+        {room.oculta ? (
+          <View style={[styles.badge, styles.hiddenBadge]}>
+            <Ionicons name="eye-off-outline" size={12} color={colors.dangerText} />
+            <Text style={[styles.badgeText, styles.hiddenBadgeText]}>Oculta por moderación</Text>
+          </View>
+        ) : null}
         <Text style={styles.price}>{formatPrice(room.precio)}</Text>
         <View style={styles.row}>
           <Ionicons name="location-outline" size={16} color={colors.textMuted} />
@@ -53,6 +59,8 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   badgeText: { fontSize: 12, fontWeight: '700', color: colors.featuredText },
+  hiddenBadge: { backgroundColor: colors.dangerLight },
+  hiddenBadgeText: { color: colors.dangerText },
   price: { fontSize: 22, fontWeight: '800', color: colors.text },
   row: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   address: { flex: 1, fontSize: 15, color: colors.textSecondary },

@@ -85,9 +85,16 @@ function RoomDetailScreen() {
         {user?.role === 'ARRENDADOR' && (
           <Text style={[sharedStyles.muted, styles.note]}>Solo los estudiantes pueden reservar habitaciones.</Text>
         )}
-        {user?.role === 'ESTUDIANTE' && (
+        {room.disponible === false ? (
+          <View style={styles.unavailable}>
+            <Ionicons name="eye-off-outline" size={18} color={colors.dangerText} />
+            <Text style={styles.unavailableText}>
+              Esta habitación no está disponible: fue retirada de las búsquedas y no se puede reservar.
+            </Text>
+          </View>
+        ) : user?.role === 'ESTUDIANTE' ? (
           <Button title="Reservar" onPress={() => router.push(`/student/reserve/${room.id}`)} />
-        )}
+        ) : null}
       </View>
 
       <View style={sharedStyles.card}>
@@ -111,6 +118,15 @@ const styles = StyleSheet.create({
   addressRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 6 },
   address: { flex: 1, fontSize: 16, fontWeight: '600', color: colors.text },
   description: { fontSize: 15, lineHeight: 22, color: colors.textSecondary },
+  unavailable: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+    borderRadius: 8,
+    padding: 10,
+    backgroundColor: colors.dangerLight,
+  },
+  unavailableText: { flex: 1, fontSize: 14, color: colors.dangerText },
   stats: {
     flexDirection: 'row',
     gap: 12,

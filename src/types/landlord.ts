@@ -9,6 +9,7 @@ export interface Landlord {
   cantidadHabitaciones: number;
   fotoPerfil: string | null;
   telefono?: string | null; // only comes back for the landlord himself (or ADMIN)
+  suspendido?: boolean; // moderation by the ADMIN
 }
 
 // EP 015 - body (ArrendadorUpdateRequestDTO)
