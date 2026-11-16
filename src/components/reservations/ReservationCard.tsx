@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getStudentProfile } from '@/api/students';
+import { Avatar } from '@/components/ui/Avatar';
 import { RoomAddress } from '@/components/rooms/RoomAddress';
 import { colors, sharedStyles } from '@/constants/theme';
 import { useFetch } from '@/hooks/useFetch';
@@ -29,10 +30,14 @@ function StudentName({ studentId }: { studentId: number }) {
   const { data: student, loading } = useFetch((signal) => getStudentProfile(studentId, signal), [studentId]);
 
   if (loading) return <Text style={sharedStyles.muted}>Cargando estudiante...</Text>;
+  if (!student) return <Text style={styles.info}>{`Estudiante #${studentId}`}</Text>;
   return (
-    <Text style={styles.info}>
-      {student ? `${student.nombre} · ${student.universidadNombre}` : `Estudiante #${studentId}`}
-    </Text>
+    <View style={styles.student}>
+      <Avatar name={student.nombre} src={student.fotoPerfil} size="xs" />
+      <Text style={styles.info}>
+        {student.nombre} · {student.universidadNombre}
+      </Text>
+    </View>
   );
 }
 
@@ -75,6 +80,7 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
   rowContent: { flex: 1 },
   info: { fontSize: 14, color: colors.textSecondary },
+  student: { flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' },
   actions: {
     flexDirection: 'row',
     flexWrap: 'wrap',

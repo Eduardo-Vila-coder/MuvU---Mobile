@@ -7,10 +7,12 @@ export interface Landlord {
   puntajePromedio: number | null;
   totalCalificaciones: number;
   cantidadHabitaciones: number;
+  fotoPerfil: string | null;
 }
 
 // EP 015 - body (ArrendadorUpdateRequestDTO)
 export interface UpdateLandlordRequest {
   nombre: string;
   dniFoto: string | null;
+  fotoPerfil?: string | null; // new photo URL; '' removes it; null/omitted = keep the current one
 }
