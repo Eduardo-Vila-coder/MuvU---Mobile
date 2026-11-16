@@ -70,6 +70,15 @@ export function ReservationCard({ reservation, showStudent = false, actions }: R
         </InfoRow>
       )}
 
+      {/* Landlord view: what the student wrote when requesting */}
+      {showStudent && reservation.mensaje ? (
+        <InfoRow icon="chatbox-ellipses-outline">
+          <Text style={styles.message} numberOfLines={4}>
+            “{reservation.mensaje}”
+          </Text>
+        </InfoRow>
+      ) : null}
+
       {/* Confirmed: the backend sends the other party's contact (landlord for the student and vice versa) */}
       {reservation.estado === 'CONFIRMADO' && reservation.contacto ? (
         <ReservationContact
@@ -90,6 +99,7 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
   rowContent: { flex: 1 },
   info: { fontSize: 14, color: colors.textSecondary },
+  message: { fontSize: 14, fontStyle: 'italic', color: colors.textSecondary },
   student: { flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' },
   actions: {
     flexDirection: 'row',

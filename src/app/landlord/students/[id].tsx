@@ -48,6 +48,15 @@ export default function StudentProfileScreen() {
       </View>
 
       <View style={sharedStyles.card}>
+        <Text style={sharedStyles.label}>Sobre mí</Text>
+        {student.descripcion ? (
+          <Text style={styles.about}>{student.descripcion}</Text>
+        ) : (
+          <Text style={sharedStyles.muted}>El estudiante aún no escribió una descripción.</Text>
+        )}
+      </View>
+
+      <View style={sharedStyles.card}>
         <Text style={sharedStyles.label}>Calificaciones que ha dado</Text>
         {average != null ? (
           <View style={styles.ratingRow}>
@@ -67,6 +76,7 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   headerText: { flex: 1, gap: 4 },
   nameRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  about: { fontSize: 15, lineHeight: 22, color: colors.textSecondary },
   name: { fontSize: 18, fontWeight: '700', color: colors.text },
   ratingRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   ratingValue: { fontSize: 16, fontWeight: '700', color: colors.text },

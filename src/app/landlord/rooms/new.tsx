@@ -6,7 +6,7 @@ import { sharedStyles } from '../../../constants/theme';
 import { useToast } from '../../../hooks/useToast';
 import type { RoomRequest } from '../../../types/room';
 
-const EMPTY_VALUES: RoomFormValues = { address: '', price: '', area: '' };
+const EMPTY_VALUES: RoomFormValues = { address: '', price: '', area: '', description: '' };
 
 // EP 016 - POST /habitaciones
 export default function NewRoomScreen() {

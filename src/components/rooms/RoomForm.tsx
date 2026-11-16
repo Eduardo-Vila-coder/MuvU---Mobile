@@ -4,9 +4,10 @@ import { getErrorMessage, getErrorStatus, mapFieldErrors } from '../../api/error
 import { sharedStyles } from '../../constants/theme';
 import { useForm, type FormErrors } from '../../hooks/useForm';
 import type { RoomRequest } from '../../types/room';
-import { validatePositiveNumber, validateRequiredText } from '../../utils/validators';
+import { validateOptionalText, validatePositiveNumber, validateRequiredText } from '../../utils/validators';
 import { Button } from '../ui/Button';
 import { FormAlert } from '../ui/FormAlert';
+import { TextAreaField } from '../ui/TextAreaField';
 import { TextField } from '../ui/TextField';
 import { AddressInput } from './AddressInput';
 import { isMapPoint, type MapPoint } from '../maps/types';
@@ -15,15 +16,19 @@ export interface RoomFormValues {
   address: string;
   price: string; // typed as text, converted on submit
   area: string;
+  description: string;
   latitud?: number;
   longitud?: number;
 }
+
+const DESCRIPTION_MAX = 1000;
 
 function validateRoom(values: RoomFormValues): FormErrors<RoomFormValues> {
   return {
     address: validateRequiredText(values.address, 'La dirección es obligatoria', 255),
     price: validatePositiveNumber(values.price, 'El precio es obligatorio'),
     area: validatePositiveNumber(values.area, 'El área es obligatoria', { integer: true }),
+    description: validateOptionalText(values.description, DESCRIPTION_MAX),
   };
 }
 
@@ -64,12 +69,13 @@ export function RoomForm({ initialValues, submitLabel, onSubmit }: RoomFormProps
         direccion: values.address.trim(),
         precio: Number(values.price),
         area: Number(values.area),
+        descripcion: values.description.trim(), // '' = no description
         latitud: location.lat,
         longitud: location.lng,
       });
     } catch (err) {
       setServerErrors(
-        mapFieldErrors<RoomFormValues>(err, { direccion: 'address', precio: 'price', area: 'area' }),
+        mapFieldErrors<RoomFormValues>(err, { direccion: 'address', precio: 'price', area: 'area', descripcion: 'description' }),
       );
       setFormError(getRoomErrorMessage(err));
     } finally {
@@ -101,6 +107,16 @@ export function RoomForm({ initialValues, submitLabel, onSubmit }: RoomFormProps
         error={getError('area')}
         placeholder="12"
         keyboardType="number-pad"
+      />
+      <TextAreaField
+        label="Descripción (opcional)"
+        value={values.description}
+        onChangeText={(text) => setValue('description', text)}
+        error={getError('description')}
+        hint="Servicios, reglas de la casa y qué hay cerca"
+        placeholder="Ej. Baño propio, wifi incluido, cerca al paradero."
+        maxLength={DESCRIPTION_MAX}
+        minHeight={120}
       />
       <Button title={submitting ? 'Guardando...' : submitLabel} onPress={handleSubmit} loading={submitting} />
     </View>

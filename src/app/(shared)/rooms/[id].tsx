@@ -90,6 +90,15 @@ function RoomDetailScreen() {
         )}
       </View>
 
+      <View style={sharedStyles.card}>
+        <Text style={sharedStyles.sectionTitle}>Sobre la habitación</Text>
+        {room.descripcion ? (
+          <Text style={styles.description}>{room.descripcion}</Text>
+        ) : (
+          <Text style={sharedStyles.muted}>El arrendador aún no agregó una descripción.</Text>
+        )}
+      </View>
+
       <RoomRouteMap latitude={room.latitud} longitude={room.longitud} />
       <RoomRatings roomId={room.id} />
     </ScrollView>
@@ -101,6 +110,7 @@ const styles = StyleSheet.create({
   perMonth: { fontSize: 15, fontWeight: '400', color: colors.textMuted },
   addressRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 6 },
   address: { flex: 1, fontSize: 16, fontWeight: '600', color: colors.text },
+  description: { fontSize: 15, lineHeight: 22, color: colors.textSecondary },
   stats: {
     flexDirection: 'row',
     gap: 12,
