@@ -14,7 +14,7 @@ import { useForm, type FormErrors } from '../../hooks/useForm';
 import { useToast } from '../../hooks/useToast';
 import { useUniversities } from '../../hooks/useUniversities';
 import type { AuthResponse, RegisterRole } from '../../types/auth';
-import { validateEmail, validateName, validatePassword } from '../../utils/validators';
+import { normalizePhone, validateEmail, validateName, validatePassword, validatePhone } from '../../utils/validators';
 
 interface RegisterValues {
   role: RegisterRole;
@@ -22,6 +22,7 @@ interface RegisterValues {
   email: string;
   password: string;
   universityId: number | null;
+  phone: string;
 }
 
 const INITIAL_VALUES: RegisterValues = {
@@ -30,6 +31,7 @@ const INITIAL_VALUES: RegisterValues = {
   email: '',
   password: '',
   universityId: null,
+  phone: '',
 };
 
 const SERVER_FIELDS: Record<string, keyof RegisterValues> = {
@@ -37,6 +39,7 @@ const SERVER_FIELDS: Record<string, keyof RegisterValues> = {
   correo: 'email',
   contrasena: 'password',
   universidadId: 'universityId',
+  telefono: 'phone',
 };
 
 // Same rules as the web: students need a .edu.pe email and a university
@@ -47,6 +50,7 @@ function validateRegister(values: RegisterValues): FormErrors<RegisterValues> {
     email: validateEmail(values.email, { requireEduPe: isStudent }),
     password: validatePassword(values.password),
     universityId: isStudent && values.universityId === null ? 'Elige tu universidad' : undefined,
+    phone: validatePhone(values.phone),
   };
 }
 
@@ -65,6 +69,7 @@ export default function RegisterScreen() {
       nombre: values.name.trim(),
       correo: values.email.trim().toLowerCase(),
       contrasena: values.password,
+      telefono: normalizePhone(values.phone) || undefined, // optional
     };
     if (!isStudent) return registerLandlord(body);
     return registerStudent({ ...body, universidadId: values.universityId! }); // validated before
@@ -121,6 +126,17 @@ export default function RegisterScreen() {
           error={getError('password')}
           hint="8 a 64 caracteres, con mayúscula, minúscula, número y símbolo"
           secureTextEntry
+        />
+        <TextField
+          label="Celular (opcional)"
+          value={values.phone}
+          onChangeText={(text) => setValue('phone', text)}
+          error={getError('phone')}
+          hint="Solo se comparte con la otra parte cuando se confirma una reserva"
+          placeholder="987 654 321"
+          keyboardType="phone-pad"
+          autoComplete="tel"
+          maxLength={15}
         />
 
         {isStudent && (

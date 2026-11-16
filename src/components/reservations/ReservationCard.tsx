@@ -8,6 +8,7 @@ import { colors, sharedStyles } from '@/constants/theme';
 import { useFetch } from '@/hooks/useFetch';
 import type { Reservation } from '@/types/reservation';
 import { countNights, formatDate } from '@/utils/dates';
+import { ReservationContact } from './ReservationContact';
 import { ReservationStatusBadge } from './ReservationStatusBadge';
 
 interface ReservationCardProps {
@@ -68,6 +69,15 @@ export function ReservationCard({ reservation, showStudent = false, actions }: R
           <StudentName studentId={reservation.estudianteId} />
         </InfoRow>
       )}
+
+      {/* Confirmed: the backend sends the other party's contact (landlord for the student and vice versa) */}
+      {reservation.estado === 'CONFIRMADO' && reservation.contacto ? (
+        <ReservationContact
+          contact={reservation.contacto}
+          contactRole={showStudent ? 'estudiante' : 'arrendador'}
+          reservationId={reservation.id}
+        />
+      ) : null}
 
       {actions && <View style={styles.actions}>{actions}</View>}
     </View>
