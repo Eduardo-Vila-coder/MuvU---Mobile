@@ -6,16 +6,21 @@ const OPTIONS: ImagePicker.ImagePickerOptions = {
   quality: 0.7,
 };
 
-// Camera first; with no permission or no camera, the gallery. Returns the photo URI or null
-export async function pickPhoto(): Promise<string | null> {
-  const permission = await ImagePicker.requestCameraPermissionsAsync();
+export type PhotoSource = 'camera' | 'library';
+
+// 'camera': camera first (with no permission or no camera, the gallery). 'library': straight to the gallery.
+// Returns the local photo URI, or null if the user cancelled
+export async function pickPhoto(source: PhotoSource = 'camera'): Promise<string | null> {
   let result: ImagePicker.ImagePickerResult | null = null;
 
-  if (permission.granted) {
-    try {
-      result = await ImagePicker.launchCameraAsync(OPTIONS);
-    } catch {
-      result = null; // no camera (emulator): use the gallery
+  if (source === 'camera') {
+    const permission = await ImagePicker.requestCameraPermissionsAsync();
+    if (permission.granted) {
+      try {
+        result = await ImagePicker.launchCameraAsync(OPTIONS);
+      } catch {
+        result = null; // no camera (emulator): use the gallery
+      }
     }
   }
   // The gallery needs no permission request

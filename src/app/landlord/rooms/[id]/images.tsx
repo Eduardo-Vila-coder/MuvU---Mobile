@@ -9,28 +9,15 @@ import { ActionLink } from '../../../../components/ui/ActionLink';
 import { Button } from '../../../../components/ui/Button';
 import { EmptyState } from '../../../../components/ui/EmptyState';
 import { ErrorState } from '../../../../components/ui/ErrorState';
-import { TextField } from '../../../../components/ui/TextField';
 import { colors, sharedStyles } from '../../../../constants/theme';
 import { useFetch } from '../../../../hooks/useFetch';
-import { useForm, type FormErrors } from '../../../../hooks/useForm';
 import { useToast } from '../../../../hooks/useToast';
 import type { RoomImage } from '../../../../types/room';
-import { pickPhoto } from '../../../../utils/pickPhoto';
-import { validateUrl } from '../../../../utils/validators';
-
-interface UrlValues {
-  url: string;
-}
-
-const INITIAL_VALUES: UrlValues = { url: '' };
-
-function validateUrlForm(values: UrlValues): FormErrors<UrlValues> {
-  return { url: validateUrl(values.url) };
-}
+import { pickPhoto, type PhotoSource } from '../../../../utils/pickPhoto';
 
 function getPhotoErrorMessage(err: unknown): string {
   if (err instanceof Error && err.message === UPLOAD_UNAVAILABLE) {
-    return 'Aún no se pueden subir fotos desde el celular. Pega la URL de una imagen ya publicada.';
+    return 'Falta configurar Cloudinary para subir fotos.';
   }
   return getErrorMessage(err);
 }
@@ -44,43 +31,20 @@ export default function RoomImagesScreen() {
     (signal) => getRoomImages(roomId, signal),
     [roomId],
   );
-  const { values, setValue, getError, validateAll, setServerErrors, reset } = useForm(
-    INITIAL_VALUES,
-    validateUrlForm,
-  );
   const [saving, setSaving] = useState(false);
 
-  async function saveUrl(url: string) {
-    await addRoomImage(roomId, { url });
-    showToast('Imagen agregada');
-    reload();
-  }
-
-  // Camera -> uploadPhoto (photo to URL) -> EP 017
-  async function handleTakePhoto() {
-    const uri = await pickPhoto();
+  // Camera or gallery -> Cloudinary (the user never sees the link) -> EP 017 saves it
+  async function handleAddPhoto(source: PhotoSource) {
+    const uri = await pickPhoto(source);
     if (!uri) return; // the user cancelled
 
     setSaving(true);
     try {
-      await saveUrl(await uploadPhoto(uri));
+      await addRoomImage(roomId, { url: await uploadPhoto(uri) });
+      showToast('Foto agregada');
+      reload();
     } catch (err) {
       showToast(getPhotoErrorMessage(err), 'error');
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  // Manual URL (same as the web)
-  async function handleAddUrl() {
-    if (!validateAll()) return;
-
-    setSaving(true);
-    try {
-      await saveUrl(values.url.trim());
-      reset();
-    } catch (err) {
-      setServerErrors({ url: getErrorMessage(err) });
     } finally {
       setSaving(false);
     }
@@ -134,20 +98,10 @@ export default function RoomImagesScreen() {
       keyboardShouldPersistTaps="handled"
     >
       <View style={sharedStyles.card}>
-        <Text style={sharedStyles.sectionTitle}>Agregar imagen</Text>
-        <Button title="Tomar foto" onPress={handleTakePhoto} loading={saving} />
-        <Text style={sharedStyles.muted}>O pega la URL de una imagen ya publicada:</Text>
-        <TextField
-          label="URL de la imagen"
-          value={values.url}
-          onChangeText={(text) => setValue('url', text)}
-          error={getError('url')}
-          placeholder="https://..."
-          keyboardType="url"
-          autoCapitalize="none"
-          autoCorrect={false}
-        />
-        <Button title="Agregar URL" variant="secondary" onPress={handleAddUrl} disabled={saving} />
+        <Text style={sharedStyles.sectionTitle}>Agregar foto</Text>
+        <Text style={sharedStyles.muted}>Fotos claras del cuarto, el baño y las áreas comunes ayudan a que te reserven.</Text>
+        <Button title={saving ? 'Subiendo foto...' : 'Tomar foto'} onPress={() => handleAddPhoto('camera')} loading={saving} />
+        <Button title="Elegir de la galería" variant="secondary" onPress={() => handleAddPhoto('library')} disabled={saving} />
       </View>
 
       <Text style={sharedStyles.sectionTitle}>Imágenes de la habitación</Text>
