@@ -11,6 +11,8 @@ App móvil (Android e iOS) de **MuvU**, la plataforma de alquiler de habitacione
 | API (backend) | `https://muvu-api.duckdns.org/api/v1` · repo [Backend_MUVU](https://github.com/cristhianjinchuna-dev/Backend_MUVU) |
 | Web | https://muvu-rouge.vercel.app |
 
+> **Disponibilidad del backend:** la API corre en una instancia EC2 de **AWS Academy (Learner Lab)**, que AWS apaga automáticamente al terminar cada sesión del laboratorio (máximo 4 horas). Mientras el laboratorio está encendido, todo el stack funciona por HTTPS. Para revisar el proyecto, coordinar con el equipo para encender el laboratorio; al encenderse, el backend y el HTTPS arrancan solos (servicios `systemd`), sin pasos manuales, y la IP elástica y el dominio no cambian. Comprobación rápida: [`/api/v1/universidades`](https://muvu-api.duckdns.org/api/v1/universidades) debe responder con un JSON.
+
 ## Funcionalidades
 
 | Rol | Qué puede hacer |
@@ -84,13 +86,13 @@ Cada funcionalidad se trabajó en su propia rama y se integró a `main` con pull
 
 ### Participación
 
-| Integrante | GitHub | Aportes en la app |
-|---|---|---|
-| Eduardo Raúl Vila Castellares | `Eduardo-Vila-coder` | Base de la app (Expo Router, autenticación, login, registro, recuperación de contraseña) y flujos completos de estudiante y arrendador |
-| Yerik Dylan Vega Santillan | `Yerik-Vega` | Pagos con Stripe (PaymentSheet, Google Pay), mapas de Google, rutas y radio de búsqueda |
-| Cristhian Gabriel Jinchuña Cama | `cristhianjinchuna-dev` | Subida de fotos con Cloudinary (cámara y galería), fotos de perfil, contacto tras la confirmación, descripciones, moderación y publicación con EAS Update |
-| Mathius Edgar Quispe Sicha | `MQS144` | Desarrollo inicial de la app móvil |
-| Mathias Alonso Cavalcanti Estacio | `MatCavUTEC` | Backend y web (ver sus repositorios) |
+| Integrante | GitHub | Aportes en la app | Participación |
+|---|---|---|---|
+| Eduardo Raúl Vila Castellares | `Eduardo-Vila-coder` | Base de la app (Expo Router, autenticación, login, registro, recuperación de contraseña) y flujos completos de estudiante y arrendador | 100 % |
+| Yerik Dylan Vega Santillan | `Yerik-Vega` | Pagos con Stripe (PaymentSheet, Google Pay), mapas de Google, rutas y radio de búsqueda | 100 % |
+| Cristhian Gabriel Jinchuña Cama | `cristhianjinchuna-dev` | Subida de fotos con Cloudinary (cámara y galería), fotos de perfil, contacto tras la confirmación, descripciones, moderación y publicación con EAS Update | 100 % |
+| Mathius Edgar Quispe Sicha | `MQS144` | Desarrollo inicial de la app móvil | 100 % |
+| Mathias Alonso Cavalcanti Estacio | `MatCavUTEC` | Backend y web (ver sus repositorios) | 100 % |
 
 
 ## Mapas
