@@ -1,11 +1,12 @@
 import { useCallback, useRef, useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from 'expo-router';
 import { getErrorMessage, getErrorStatus, mapFieldErrors } from '@/api/errors';
 import { deleteLandlord, getLandlord, updateLandlord } from '@/api/landlords';
 import { UPLOAD_UNAVAILABLE, uploadPhoto } from '@/api/photos';
 import { RatingStars } from '@/components/ratings/RatingStars';
+import { ActionLink } from '@/components/ui/ActionLink';
 import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { FormAlert } from '@/components/ui/FormAlert';
@@ -19,7 +20,7 @@ import { useForm, type FormErrors } from '@/hooks/useForm';
 import { useLandlordId } from '@/hooks/useLandlordId';
 import { useToast } from '@/hooks/useToast';
 import type { Landlord } from '@/types/landlord';
-import { pickPhoto } from '@/utils/pickPhoto';
+import { pickPhoto, type PhotoSource } from '@/utils/pickPhoto';
 import { normalizePhone, validateName, validatePhone, validateUrl } from '@/utils/validators';
 
 interface ProfileValues {
@@ -87,9 +88,9 @@ function ProfileContent({ landlord, onSaved }: { landlord: Landlord; onSaved: ()
   const [deleting, setDeleting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
-  // Camera -> uploadPhoto (photo to URL) -> dniFoto field
-  async function handleTakeDniPhoto() {
-    const uri = await pickPhoto();
+  // Camera or gallery -> Cloudinary -> kept in the form (the user only sees the thumbnail)
+  async function handlePickDniPhoto(source: PhotoSource) {
+    const uri = await pickPhoto(source);
     if (!uri) return; // the user cancelled
 
     setUploading(true);
@@ -99,7 +100,7 @@ function ProfileContent({ landlord, onSaved }: { landlord: Landlord; onSaved: ()
     } catch (err) {
       const message =
         err instanceof Error && err.message === UPLOAD_UNAVAILABLE
-          ? 'Aún no se pueden subir fotos desde el celular. Pega la URL de la foto de tu DNI.'
+          ? 'Falta configurar Cloudinary para subir fotos.'
           : getErrorMessage(err);
       showToast(message, 'error');
     } finally {
@@ -238,18 +239,30 @@ function ProfileContent({ landlord, onSaved }: { landlord: Landlord; onSaved: ()
         />
 
         <Text style={sharedStyles.label}>Foto de tu DNI</Text>
-        <Button title="Tomar foto del DNI" variant="secondary" onPress={handleTakeDniPhoto} loading={uploading} />
-        <TextField
-          label="O pega la URL de la foto"
-          value={values.dniPhotoUrl}
-          onChangeText={(text) => setValue('dniPhotoUrl', text)}
-          error={getError('dniPhotoUrl')}
-          hint="Si ya la enviaste antes, déjalo vacío para conservarla."
-          placeholder="https://..."
-          keyboardType="url"
-          autoCapitalize="none"
-          autoCorrect={false}
-        />
+        <Text style={sharedStyles.muted}>
+          El administrador la revisa para verificar tu cuenta. Si ya la enviaste, no hace falta volver a hacerlo.
+        </Text>
+        {values.dniPhotoUrl ? (
+          <View style={styles.dniBox}>
+            <Image source={{ uri: values.dniPhotoUrl }} style={styles.dniPreview} resizeMode="contain" />
+            <Text style={styles.dniReady}>Foto lista. Toca “Guardar cambios” para enviarla.</Text>
+            <View style={styles.dniActions}>
+              <ActionLink icon="camera-outline" label="Cambiar" onPress={() => handlePickDniPhoto('camera')} disabled={uploading} />
+              <ActionLink icon="close-circle-outline" label="Quitar" danger onPress={() => setValue('dniPhotoUrl', '')} />
+            </View>
+          </View>
+        ) : uploading ? (
+          <View style={styles.dniUploading}>
+            <ActivityIndicator color={colors.primary} />
+            <Text style={sharedStyles.muted}>Subiendo foto...</Text>
+          </View>
+        ) : (
+          <>
+            <Button title="Tomar foto del DNI" variant="secondary" onPress={() => handlePickDniPhoto('camera')} />
+            <Button title="Elegir de la galería" variant="secondary" onPress={() => handlePickDniPhoto('library')} />
+          </>
+        )}
+        {getError('dniPhotoUrl') ? <Text style={styles.error}>{getError('dniPhotoUrl')}</Text> : null}
 
         <Button title={saving ? 'Guardando...' : 'Guardar cambios'} onPress={handleSave} loading={saving} />
       </View>
@@ -296,6 +309,12 @@ const styles = StyleSheet.create({
   },
   statValue: { fontSize: 20, fontWeight: '800', color: colors.text },
   dangerZone: { borderColor: '#fecaca' }, // red-200
+  dniBox: { gap: 8 },
+  dniPreview: { width: '100%', aspectRatio: 16 / 10, borderRadius: 12, backgroundColor: colors.background },
+  dniReady: { fontSize: 13, color: '#15803d' }, // green-700
+  dniActions: { flexDirection: 'row', gap: 20 },
+  dniUploading: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 12 },
+  error: { fontSize: 13, color: colors.danger },
   dangerTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   dangerTitle: { fontSize: 16, fontWeight: '700', color: colors.dangerText },
 });
