@@ -26,7 +26,7 @@
       "package": "com.anonymous.muvumobile"
     },
     "web": {
-      "output": "server",
+      "output": "single",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
@@ -58,6 +58,16 @@
         "@stripe/stripe-react-native",
         {
           "enableGooglePay": true
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "extraProguardRules": "# Stripe: push provisioning (Google Wallet / Issuing) no se usa en MuvU y sus clases no vienen en el SDK\n-dontwarn com.stripe.android.pushProvisioning.**",
+            "enableMinifyInReleaseBuilds": false,
+            "enableShrinkResourcesInReleaseBuilds": false
+          }
         }
       ]
     ],

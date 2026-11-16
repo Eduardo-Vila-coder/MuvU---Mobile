@@ -1,0 +1,25 @@
+{
+  "cli": {
+    "version": ">= 16.0.0",
+    "appVersionSource": "local"
+  },
+  "build": {
+    "preview": {
+      "distribution": "internal",
+      "channel": "production",
+      "android": {
+        "buildType": "apk",
+        "gradleCommand": ":app:assembleRelease -x lintVitalRelease -x lintVitalAnalyzeRelease"
+      }
+    },
+    "production": {
+      "channel": "production",
+      "android": {
+        "gradleCommand": ":app:bundleRelease -x lintVitalRelease -x lintVitalAnalyzeRelease"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

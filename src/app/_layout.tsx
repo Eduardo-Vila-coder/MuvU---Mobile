@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Linking } from 'react-native';
-import { StripeProvider, useStripe } from '@stripe/stripe-react-native';
+import { StripeProvider, useStripe } from '@/utils/stripe';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { AuthProvider } from '@/context/AuthContext';
