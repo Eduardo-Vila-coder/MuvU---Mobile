@@ -47,6 +47,7 @@ export default function EditRoomScreen() {
           longitud: room.longitud,
           price: String(room.precio),
           area: room.area === null ? '' : String(room.area),
+          description: room.descripcion ?? '',
         }}
         submitLabel="Guardar cambios"
         onSubmit={handleSubmit}

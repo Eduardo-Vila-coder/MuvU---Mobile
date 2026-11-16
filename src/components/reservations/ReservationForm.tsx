@@ -5,23 +5,29 @@ import { getErrorMessage, getErrorStatus, mapFieldErrors } from '@/api/errors';
 import { createReservation } from '@/api/reservations';
 import { Button } from '@/components/ui/Button';
 import { FormAlert } from '@/components/ui/FormAlert';
+import { TextAreaField } from '@/components/ui/TextAreaField';
 import { TextField } from '@/components/ui/TextField';
 import { colors, sharedStyles } from '@/constants/theme';
 import { useForm, type FormErrors } from '@/hooks/useForm';
 import { useToast } from '@/hooks/useToast';
 import { addDays, countNights, isValidIsoDate, todayIso } from '@/utils/dates';
+import { validateOptionalText } from '@/utils/validators';
 import { View } from 'react-native';
 
 interface ReservationValues {
   startDate: string;
   endDate: string;
+  message: string;
 }
 
-const INITIAL_VALUES: ReservationValues = { startDate: '', endDate: '' };
+const MESSAGE_MAX = 500;
+
+const INITIAL_VALUES: ReservationValues = { startDate: '', endDate: '', message: '' };
 
 const SERVER_FIELDS: Record<string, keyof ReservationValues> = {
   fecha_inicio: 'startDate',
   fecha_fin: 'endDate',
+  mensaje: 'message',
 };
 
 // Same rules as ReservaRequestDTO: start today or later, end after start
@@ -38,6 +44,8 @@ function validateReservation(values: ReservationValues): FormErrors<ReservationV
   if (!end) errors.endDate = 'Escribe la fecha de salida';
   else if (!isValidIsoDate(end)) errors.endDate = 'Usa el formato AAAA-MM-DD';
   else if (!errors.startDate && end <= start) errors.endDate = 'La salida debe ser posterior al ingreso';
+
+  errors.message = validateOptionalText(values.message, MESSAGE_MAX);
 
   return errors;
 }
@@ -65,6 +73,7 @@ export function ReservationForm({ roomId }: { roomId: number }) {
         fecha_inicio: values.startDate.trim(),
         fecha_fin: values.endDate.trim(),
         habitacionId: roomId,
+        mensaje: values.message.trim() || undefined, // optional
       });
       showToast('Solicitud enviada. Te avisaremos por correo cuando el arrendador la confirme.');
       router.replace('/student/reservations');
@@ -111,6 +120,14 @@ export function ReservationForm({ roomId }: { roomId: number }) {
           message={`${nights} ${nights === 1 ? 'noche' : 'noches'} · el arrendador debe confirmar tu solicitud`}
         />
       )}
+      <TextAreaField
+        label="Mensaje para el arrendador (opcional)"
+        value={values.message}
+        onChangeText={(text) => setValue('message', text)}
+        error={getError('message')}
+        placeholder="Preséntate: qué estudias, cuándo te mudas, alguna pregunta..."
+        maxLength={MESSAGE_MAX}
+      />
       <Button title={submitting ? 'Enviando...' : 'Solicitar reserva'} onPress={handleSubmit} loading={submitting} />
       <Text style={styles.note}>No se te cobrará nada al enviar la solicitud.</Text>
     </View>

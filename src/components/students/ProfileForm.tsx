@@ -5,24 +5,29 @@ import { updateStudent } from '@/api/students';
 import { UniversityPicker } from '@/components/UniversityPicker';
 import { Button } from '@/components/ui/Button';
 import { FormAlert } from '@/components/ui/FormAlert';
+import { TextAreaField } from '@/components/ui/TextAreaField';
 import { TextField } from '@/components/ui/TextField';
 import { colors, sharedStyles } from '@/constants/theme';
 import { useForm, type FormErrors } from '@/hooks/useForm';
 import { useToast } from '@/hooks/useToast';
 import type { Student } from '@/types/student';
 import type { University } from '@/types/university';
-import { normalizePhone, validateName, validatePhone } from '@/utils/validators';
+import { normalizePhone, validateName, validateOptionalText, validatePhone } from '@/utils/validators';
 
 interface ProfileValues {
   name: string;
   universityId: number | null;
   phone: string;
+  about: string;
 }
+
+const ABOUT_MAX = 500;
 
 const SERVER_FIELDS: Record<string, keyof ProfileValues> = {
   nombre: 'name',
   universidadId: 'universityId',
   telefono: 'phone',
+  descripcion: 'about',
 };
 
 function validateProfile(values: ProfileValues): FormErrors<ProfileValues> {
@@ -30,6 +35,7 @@ function validateProfile(values: ProfileValues): FormErrors<ProfileValues> {
     name: validateName(values.name),
     universityId: values.universityId === null ? 'Elige tu universidad' : undefined,
     phone: validatePhone(values.phone),
+    about: validateOptionalText(values.about, ABOUT_MAX),
   };
 }
 
@@ -44,7 +50,7 @@ interface ProfileFormProps {
 export function ProfileForm({ student, universities, initialUniversityId, onSaved }: ProfileFormProps) {
   const { showToast } = useToast();
   const { values, setValue, getError, validateAll, setServerErrors } = useForm<ProfileValues>(
-    { name: student.nombre, universityId: initialUniversityId, phone: student.telefono ?? '' },
+    { name: student.nombre, universityId: initialUniversityId, phone: student.telefono ?? '', about: student.descripcion ?? '' },
     validateProfile,
   );
   const [saving, setSaving] = useState(false);
@@ -60,6 +66,7 @@ export function ProfileForm({ student, universities, initialUniversityId, onSave
         nombre: values.name.trim(),
         universidadId: values.universityId,
         telefono: normalizePhone(values.phone), // '' = no phone
+        descripcion: values.about.trim(), // '' = no "Sobre mí"
       });
       showToast('Perfil actualizado');
       onSaved();
@@ -101,6 +108,15 @@ export function ProfileForm({ student, universities, initialUniversityId, onSave
         keyboardType="phone-pad"
         autoComplete="tel"
         maxLength={15}
+      />
+      <TextAreaField
+        label="Sobre mí (opcional)"
+        value={values.about}
+        onChangeText={(text) => setValue('about', text)}
+        error={getError('about')}
+        hint="Lo ven los arrendadores cuando les envías una solicitud"
+        placeholder="Qué estudias, de dónde eres, tus hábitos..."
+        maxLength={ABOUT_MAX}
       />
       <Text style={sharedStyles.muted}>El correo y la contraseña no se pueden cambiar desde aquí.</Text>
       <Button title={saving ? 'Guardando...' : 'Guardar cambios'} onPress={handleSave} loading={saving} />
