@@ -89,7 +89,7 @@ Cada funcionalidad se trabajó en su propia rama y se integró a `main` con pull
 | Eduardo Raúl Vila Castellares | `Eduardo-Vila-coder` | Base de la app (Expo Router, autenticación, login, registro, recuperación de contraseña) y flujos completos de estudiante y arrendador |
 | Yerik Dylan Vega Santillan | `Yerik-Vega` | Pagos con Stripe (PaymentSheet, Google Pay), mapas de Google, rutas y radio de búsqueda |
 | Cristhian Gabriel Jinchuña Cama | `cristhianjinchuna-dev` | Subida de fotos con Cloudinary (cámara y galería), fotos de perfil, contacto tras la confirmación, descripciones, moderación y publicación con EAS Update |
-| Mathius Edgar Quispe Sicha | `MQS144` | Avances en la app móvil |
+| Mathius Edgar Quispe Sicha | `MQS144` | Desarrollo inicial de la app móvil |
 | Mathias Alonso Cavalcanti Estacio | `MatCavUTEC` | Backend y web (ver sus repositorios) |
 
 
